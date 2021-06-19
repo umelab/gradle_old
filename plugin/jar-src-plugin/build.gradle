@@ -1,0 +1,24 @@
+plugins {
+	// Gradleプラグイン開発をサポートするプラグイン
+	id 'java-gradle-plugin'
+	// Groovy開発をサポートするプラグイン
+	id 'groovy'
+	// Mavenリポジトリへのモジュール公開をサポートするプラグイン
+	id 'maven-publish'
+}
+
+gradlePlugin {
+	// プラグインの定義
+	plugins {
+		srcjar {
+			// 利用時に指定するプラグインID
+			id = 'jar-src-plugin'
+			// プラグインの実装クラス
+			implementationClass = 'bar.JarSrcPlugin'
+		}
+	}
+}
+
+// groupとversionを設定しておかないと、publish時にエラーが出てしまう。
+group = 'foo'
+version = '1.0.0-SNAPSHOT'

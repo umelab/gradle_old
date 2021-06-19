@@ -1,0 +1,23 @@
+buildscript {
+    repositories {
+        mavenLocal()
+	}
+	
+    dependencies {
+        classpath 'foo:jar-src-plugin:1.0.0-SNAPSHOT'
+    }
+    configurations.all {
+		//SNAPSHOT
+		resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
+		//Common Jar
+		resolutionStrategy.cacheChangingModulesFor 0, 'minutes'
+    }
+}
+
+rootProject.name = 'sample.proj'
+
+include ":Proj-A", ":Proj-B", ":Proj-Main"
+
+project(":Proj-A").projectDir 		= file("./ProjX/Proj-A/")
+project(":Proj-B").projectDir  		= file("./ProjX/Proj-B/")
+project(":Proj-Main").projectDir  	= file("./ProjX/Proj-Main/")
