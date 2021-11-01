@@ -1,0 +1,2 @@
+// ここで指定した名前がこのプラグインのjarファイル名になります
+rootProject.name = 'exec-with-pipe-plugin'
