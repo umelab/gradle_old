@@ -1,0 +1,34 @@
+plugins {
+	id 'java-gradle-plugin'
+	id 'groovy'
+	id 'maven-publish'
+}
+
+gradlePlugin {
+	// プラグインの定義
+	plugins {
+		umelab {
+			id = 'pubsample'
+			// プラグインの実装クラス
+			implementationClass = 'com.umelab.plugin.PublicationCtrlSample'
+		}
+	}
+}
+
+group = 'umelab'
+version = '1.0.0-SNAPSHOT'
+
+publishing {
+	String plugin_url 	= System.getProperty("PLUGIN_URL")  
+	String passwd 		= System.getProperty("PASSWD") 
+	
+	repositories {
+		maven {
+			url (plugin_url)
+			credentials {
+				username ('')
+				password (passwd)
+			}
+		}
+	}
+}

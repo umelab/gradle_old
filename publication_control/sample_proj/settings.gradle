@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+		String artifact_url 	= System.getProperty("PLUGIN_URL") 
+		String artifact_token 	= System.getProperty("PASSWD")
+		String artifact_user = ''
+		
+        maven {
+            url (artifact_url)
+            credentials {
+                username (artifact_user)
+                password (artifact_token)
+            }
+        }
+    }
+    dependencies {
+        classpath 'umelab:publication-control-sample:latest.integration'
+    }
+    configurations.all {
+		//SNAPSHOT
+		resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
+		//Common Jar
+		resolutionStrategy.cacheChangingModulesFor 0, 'minutes'
+    }
+}
+
+rootProject.name = 'sample'
+include ":foo", ":app"
+
