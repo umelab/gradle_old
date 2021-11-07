@@ -1,12 +1,12 @@
-package makieya;
+package foo;
 
 import makieya.lib.SampleLib;
 import makieya.net.SampleNet;
 import makieya.aa.SampleAA;
 
-public class MakieyaSample {
+public class Sample {
 	
-	public MakieyaSample(){
+	public Sample(){
 		SampleLib lib = new SampleLib();
 		System.out.println("Makieya Constructor:" + lib.getLibname());
 		System.out.println("Create net component: " + new SampleNet().getNetname());
@@ -14,6 +14,6 @@ public class MakieyaSample {
 	}
 	
 	public static void main(String args[]) {
-		new MakieyaSample();
+		new Sample();
 	}
 }

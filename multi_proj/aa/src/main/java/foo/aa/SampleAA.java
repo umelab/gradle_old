@@ -1,4 +1,4 @@
-package makieya.aa;
+package foo.aa;
 
 public class SampleAA {
 	

@@ -1,4 +1,4 @@
-package makieya.util;
+package umelab.util;
 
 public class SampleUtil {
 	
