@@ -1,0 +1,32 @@
+plugins {
+	id 'java-gradle-plugin'
+	id 'groovy'
+	id 'maven-publish'
+}
+
+gradlePlugin {
+	plugins {
+		umelab {
+			id = 'compile-option-plugin'
+			implementationClass = 'com.umelab.plugin.CompileOptionSample'
+		}
+	}
+}
+
+group = 'umelab'
+version = '1.0.0-SNAPSHOT'
+
+publishing {
+	String artifact_url 	= System.getenv("PLUGIN_ARTIFACTS_REPOSITORY_URL") != null ? System.getenv("PLUGIN_ARTIFACTS_REPOSITORY_URL") : System.getProperty("PLUGIN_ARTIFACTS_REPOSITORY_URL")  
+	String artifact_token 	= System.getenv("ARTIFACTS_TOKEN") != null ? System.getenv("ARTIFACTS_TOKEN") : System.getProperty("ARTIFACTS_TOKEN") 
+	
+	repositories {
+		maven {
+			url (artifact_url)
+			credentials {
+				username ('')
+				password (artifact_token)
+			}
+		}
+	}
+}
