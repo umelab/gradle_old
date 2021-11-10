@@ -9,6 +9,13 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.attributes.Bundling
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.LibraryElements
+import org.gradle.api.attributes.Usage
+import org.gradle.api.component.AdhocComponentWithVariants
+
 /**
 *
 * title: Publication control sample
@@ -19,7 +26,8 @@ class PublicationCtrlSample implements Plugin<Project> {
 
 	private static final String TASK_NAME_SRCJAR = 'srcJar'
 	private static final String TASK_NAME_PUBCTL = 'pubCtrl'
-
+	private static final String TASK_NAME_CREATESRCJAR = 'createSrcJar'
+	
 	private static final String PROPKEY_PROJECT_SKIP = 'PublicationSkipProjName'
 
 	/**
@@ -36,6 +44,7 @@ class PublicationCtrlSample implements Plugin<Project> {
 
 		applyPlugin(project)
 		configurePublish(project, url, passwd, 'groupId',  version)
+		configureSrcJar(project)
 		registerTasks(project)
 	}
 
@@ -50,6 +59,62 @@ class PublicationCtrlSample implements Plugin<Project> {
 		project.getPlugins().apply(MavenPublishPlugin.class)
 	}
 
+	private void configureSrcJar(Project project) {
+//		def tasknames = project.gradle.startParameter.getTaskNames()
+//		if (tasknames.contains(TASK_NAME_SRCJAR)) {
+			if (project == project.rootProject) {
+				Configuration config = createConfiguration(project)
+				def tmpTask = project.tasks.register(TASK_NAME_CREATESRCJAR, Jar) {
+					println '-- task called --'
+					def allsrc = project.sourceSets.main.allJava
+					archiveBaseName = project.archivesBaseName + '-src'
+					classifier = 'sources'
+					dependsOn("classes")
+					doFirst {
+						project.subprojects.each {
+							allsrc += it.sourceSets.main.allJava
+						}
+					}
+					from allsrc
+					duplicatesStrategy = 'include'
+					onlyIf {
+						project == project.rootProject
+					}
+				}
+
+				println 'proj: ' + project.name + ' task: ' + tmpTask.name
+				config.outgoing.artifact(tmpTask)
+				addVariantToComponent(project, config)
+			}
+//		}
+	}
+
+	private void addVariantToComponent(Project project, Configuration outgoing) {
+        AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
+        //def javaComponent = softwareComponentFactory.adhoc("mySrcComponent")
+
+        // add it to the list of components that this project declares
+        project.components.add(javaComponent)
+
+        javaComponent.addVariantsFromConfiguration(outgoing) {
+            it.mapToMavenScope("runtime")
+            it.mapToOptional()
+        }
+    }
+
+	private Configuration createConfiguration(Project project) {
+        project.configurations.create(TASK_NAME_CREATESRCJAR) { Configuration cnf ->
+            cnf.canBeConsumed = true
+            cnf.canBeResolved = false
+            cnf.attributes {
+                it.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.LIBRARY))
+                it.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, Usage.JAVA_RUNTIME))
+                it.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, 'src-jar'))
+            }
+        }
+    }
+	
+	
 	/**
 	 * 
 	 * タスクを登録します。
@@ -58,6 +123,11 @@ class PublicationCtrlSample implements Plugin<Project> {
 	 * @param extension
 	 */
 	private void registerTasks(Project project) {
+		project.tasks.register(TASK_NAME_SRCJAR) {
+			dependsOn("classes")
+		}
+		// srcJarタスク
+
 		// pubCtlJarタスク
 		project.tasks.register(TASK_NAME_PUBCTL) {
 			def targets = project.property(PROPKEY_PROJECT_SKIP).split(",")
@@ -69,7 +139,10 @@ class PublicationCtrlSample implements Plugin<Project> {
 					targets.each {
 						// if project name equals app which is defined in 'PublicationSkipProjName' in gradle.properties
 						if (proj.name.equals(it)) {
+							//proj.model1 {
 							println 'delete proj: ' + it
+							proj.tasks.generatePomFileForMavenPublication.enabled = false
+							proj.tasks.publishMavenPublicationToMavenRepository.enabled = false
 							proj.tasks.publish.enabled = false
 						}
 					}
@@ -83,7 +156,7 @@ class PublicationCtrlSample implements Plugin<Project> {
 		project.version = version
 		project.publishing {
 			publications {
-				myPublication(MavenPublication.class) {
+				maven(MavenPublication.class) {
 					groupId = group_name
 					version = version
 					from project.components.java
