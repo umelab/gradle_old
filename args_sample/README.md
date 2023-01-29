@@ -1,11 +1,10 @@
-#作成Taskでコマンドライン引数を取得する方法  
+# How to use task with arguments   
 
-作成したタスクでコマンドライン引数を取得して、タスクの振る舞いをコントロールしたい時  
-以下の２パターンが使用可能となる  
-　-P フラグ　→-Psome_key=value  
-　-D フラグ　→-Dsome_key=value  
+There are two arguments flag:
+　-P flag　-Psome_key=value  
+　-D flag　-Dsome_key=value  
 
-ここのサンプルでは以下のコマンドで実行  
+sample command line is following:
 ```
 gradle -Psome_key=foo -Dsome_key=hoge hello  
 ```

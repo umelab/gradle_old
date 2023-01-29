@@ -7,7 +7,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.api.tasks.StopExecutionException
 
 class ExecWithPipeSample implements Plugin<Project> {
 
